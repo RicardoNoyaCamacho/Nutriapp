@@ -6,6 +6,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: development
     container_name: nutriapp-api
     depends_on:
       - db # Starts DB BEFORE API
@@ -13,7 +14,7 @@ services:
       - "3000:3000" # Mapping our port with container one
     volumes:
       - .:/usr/src/app # Mount our code on dev (hot-reload)
-      - /usr/src/app/node_modules #Not override node_modules on container
+      - /usr/src/app/node_modules # Not override node_modules on container
     # ENV Variables to connect NestJS with DB
     env_file:
       - .env
