@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  #1. Our NestJS service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nutriapp-api
+    depends_on:
+      - db # Starts DB BEFORE API
+    ports:
+      - "3000:3000" # Mapping our port with container one
+    volumes:
+      - .:/usr/src/app # Mount our code on dev (hot-reload)
+      - /usr/src/app/node_modules #Not override node_modules on container
+    # ENV Variables to connect NestJS with DB
+    env_file:
+      - .env
+    command: npm run start:dev # Run app on dev mode (hot-reload)
+
+  #2. DB service
+  db:
+    image: postgres:15-alpine # Official and light docker image of Postgress
+    container_name: nutriapp-db
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+
+    ports:
+      - "5432:5432" # Only expose the port in local
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data: # Define the volumen to data persists
